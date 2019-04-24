@@ -1,30 +1,57 @@
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true })); 
 
-var http = require('http');
-var fs = require('fs');
-var path = require('path')
+let port = process.env.PORT || 3000;
+let host = process.env.HOST || "localhost";
 
-var server = http.createServer(function (req, res) {
-    if (req.url === "/") {
-        fs.readFile("ht.html", "UTF-8", function (err, html) {
-            res.writeHead(200, { "Content-Type": "text/html" });
-            res.end(html);
-        });
-    } else if (req.url.match("\.css$")) {
-        var cssPath = path.join(__dirname, 'public', req.url);
-        var fileStream = fs.createReadStream(cssPath, "UTF-8");
-        res.writeHead(200, { "Content-Type": "text/css" });
-        fileStream.pipe(res);
-    } else if (req.url.match('\.png$')) {
-        console.log(req.url);
-        var img = path.join(__dirname, 'public', req.url);
-        var fileStream = fs.createReadStream(img);
-        res.writeHead(200, { "Content-Type": "image/png" });
-        fileStream.pipe(res);
-    } else {
-        res.writeHead(200, { "Content-Type": "text/html" });
-        res.end("No-page-found");
-    }
+var strDate = new Date()
+let TodoObject = {
+    _id: 0,
+    title: 'Task 1',
+    completed: false,
+    create: strDate
+}
+let results = {
+    success: true,
+    data: TodoObject
+}
+
+app.get('/',function(req,res){
+    res.send('Hello, world!');
 })
 
+app.post('/todos',function(req,res){
+    TodoObject.title = req.body.title;
+    results.data = TodoObject;
+    res.send(results);
+})
 
-server.listen(3000);
+app.get('/todos/:id',function(req,res){
+    TodoObject._id = req.params.id;
+    results.data = TodoObject;
+    res.send(results);
+})
+
+app.post('/todos/:id',function(req,res){
+    TodoObject._id = req.params.id;
+    TodoObject.title = req.body.title;
+    results.data = TodoObject;
+    res.send(results);
+})
+
+app.post('/todos/:id/toogle',function(req,res){
+    TodoObject._id = req.params.id;
+    results.data = TodoObject;
+    res.send(results);
+})
+
+app.delete('/todos/:id',function(req,res){
+    TodoObject._id = req.params.id; 
+    results.data = true;
+    res.send(results);
+})
+
+app.listen(port,host, ()=>{console.log(`Success ${host} on ${port}`)})
