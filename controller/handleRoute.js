@@ -31,7 +31,7 @@ async function post(req, res) {
 
 async function getID(req, res) {
     let { id } = req.params;
-    await data.findOne({ _id: id })
+    await data.findById({ _id: id })
         .then((doc) => {
             return res.send({
                 success: true,
@@ -57,14 +57,40 @@ async function postID(req, res) {
         })
     }
 
-    await data.update({ _id: id }, { title: title})
-    .exec((err,result)=>{
-        if(err) throw err;
+    await data.update({ _id: id }, { title: title })
+        .exec((err, result) => {
+            if (err) throw err;
+            res.send({
+                success: true,
+                message: "true"
+            })
+        })
+}
+
+async function postToogle(req, res) {
+    try {
+        const { id } = req.params;
+        var todo = await data.findById(id).lean();
+        console.log(todo.completed)
+        await data.updateOne(
+            todo,
+            {
+                $set: {
+                    completed: !todo.completed
+                }
+            }
+        );
         res.send({
             success: true,
-            message: "true"
+            data: todo
         })
-    })
+    }
+    catch (err) {
+        res.send({
+            success: false,
+            message: err.message
+        })
+    }
 }
 
 async function deleteData(req, res) {
@@ -88,5 +114,6 @@ module.exports = {
     post,
     getID,
     postID,
+    postToogle,
     deleteData
 }

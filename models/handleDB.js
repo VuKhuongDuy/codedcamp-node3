@@ -7,6 +7,10 @@ mongoose.connect(`mongodb://${mongoPath}:${mongoPort}/data`,  { useNewUrlParser:
 
 const schema = new mongoose.Schema({
     title : {type: String, require: true, trim: true},
+    completed: {
+        type: Boolean,
+        default: false
+    },
     created : {
         type: Date,
         default: Date.now
