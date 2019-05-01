@@ -4,7 +4,7 @@ function get(req, res) {
     res.send('Hello, world!');
 }
 
-function post(req, res) {
+async function post(req, res) {
     let { title } = Object.assign({}, { title: '' }, req.body);
     if (!title) {
         return res.send({
@@ -14,7 +14,7 @@ function post(req, res) {
     }
 
     let post = new data({ title: title });
-    post.save()
+    await post.save()
         .then((doc) => {
             return res.send({
                 success: true,
@@ -29,9 +29,9 @@ function post(req, res) {
         })
 }
 
-function getID(req, res) {
+async function getID(req, res) {
     let { id } = req.params;
-    data.findOne({ _id: id })
+    await data.findOne({ _id: id })
         .then((doc) => {
             return res.send({
                 success: true,
@@ -46,7 +46,7 @@ function getID(req, res) {
         })
 }
 
-function postID(req, res) {
+async function postID(req, res) {
     let { id } = req.params;
     let { title } = req.body;
 
@@ -57,7 +57,7 @@ function postID(req, res) {
         })
     }
 
-    data.update({ _id: id }, { title: title})
+    await data.update({ _id: id }, { title: title})
     .exec((err,result)=>{
         if(err) throw err;
         res.send({
@@ -67,10 +67,10 @@ function postID(req, res) {
     })
 }
 
-function deleteData(req, res) {
+async function deleteData(req, res) {
     let { id } = req.params;
 
-    data.remove({ _id: id })
+    await data.remove({ _id: id })
         .exec((err, result) => {
             if (err) return res.send({
                 success: false,
