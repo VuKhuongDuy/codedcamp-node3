@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
-let config = require('config');
 
-const mongoPath = process.env.mongoPath || config.get("MONGO_PATH");
-const mongoPort = process.env.mongoPort || config.get(' MONGO_PORT');
+const mongoPath = process.env.mongoPath || 'localhost';
+const mongoPort = process.env.mongoPort || 27017;
 
 let connection = mongoose.createConnection(`mongodb://${mongoPath}:${mongoPort}/data`,  { useNewUrlParser: true }, function(err){
     if(err) console.log(err);
