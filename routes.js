@@ -9,4 +9,4 @@ route.post('/todos/:id',handleFunc.postID);
 route.post('/todos/:id/toogle',handleFunc.postToogle);
 route.delete('/todos/:id',handleFunc.deleteData);
 
-module.exports = route
+module.exports = route;

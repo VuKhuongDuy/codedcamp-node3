@@ -1,9 +1,13 @@
 const mongoose = require('mongoose')
+let config = require('config');
 
-const mongoPath = process.env.mongoPath || 'localhost';
-const mongoPort = process.env.mongoPort || 27017;
+const mongoPath = process.env.mongoPath || config.get("MONGO_PATH");
+const mongoPort = process.env.mongoPort || config.get(' MONGO_PORT');
 
-mongoose.connect(`mongodb://${mongoPath}:${mongoPort}/data`,  { useNewUrlParser: true });
+let connection = mongoose.createConnection(`mongodb://${mongoPath}:${mongoPort}/data`,  { useNewUrlParser: true }, function(err){
+    if(err) console.log(err);
+    console.log('Connect success');
+});
 
 const schema = new mongoose.Schema({
     title : {type: String, require: true, trim: true},
@@ -17,6 +21,6 @@ const schema = new mongoose.Schema({
     }
 })
 
-const data = mongoose.model('data',schema);
+const data = connection.model('data',schema);
 
 module.exports = data;
