@@ -5,108 +5,97 @@ function get(req, res) {
 }
 
 async function post(req, res) {
-    let { title } = Object.assign({}, { title: '' }, req.body);
-    if (!title) {
-        return res.status(404).send({
-            success: false,
-            message: "Title is false"
-        })
-    }
-
-    let post = new data({ title: title });
-    await post.save()
-        .then((doc) => {
-            return res.status(200).send({
-                success: true,
-                data: doc
-            })
-        })
-        .catch((err) => {
+    try {
+        let { title } = Object.assign({}, { title: '' }, req.body);
+        if (!title) {
             return res.status(404).send({
                 success: false,
-                message: err.message
+                message: "Title is false"
             })
-        })
+        }
+
+        let post = new data({ title: title });
+        await post.save()
+            .then((doc) => {
+                return res.status(200).send({
+                    success: true,
+                    data: doc
+                })
+            })
+    }
+    catch (err) { res.status(400).send(err) }
 }
 
 async function getID(req, res) {
-    let { id } = req.params;
-    await data.findById({ _id: id })
-        .then((doc) => {
-            return res.status(200).send({
-                success: true,
-                data: doc
+    try {
+        let { id } = req.params;
+        await data.findById({ _id: id })
+            .then((doc) => {
+                return res.status(200).send({
+                    success: true,
+                    data: doc
+                })
             })
-        })
-        .catch((err) => {
-            res.status(404).send({
-                success: false,
-                message: "Not result"
-            })
-        })
+    }
+    catch (err) { res.status(400).send(err) }
 }
 
 async function postID(req, res) {
-    let { id } = req.params;
-    let { title } = req.body;
+    try {
+        let { id } = req.params;
+        let { title } = req.body;
 
-    if (!title) {
-        return res.status(404).send({
-            success: false,
-            message: "title is empty"
-        })
-    }
-
-    await data.update({ _id: id }, { title: title })
-        .exec((err, result) => {
-            if (err) throw err;
-            res.status(200).send({
-                success: true,
-                message: "true"
+        if (!title) {
+            return res.status(404).send({
+                success: false,
+                message: "title is empty"
             })
-        })
+        }
+
+        await data.update({ _id: id }, { title: title })
+            .exec((err, result) => {
+                if (err) throw err;
+                res.status(200).send({
+                    success: true,
+                    message: "true"
+                })
+            })
+    }
+    catch (err) { res.status(400).send(err) }
 }
 
 async function postToogle(req, res) {
     try {
-        const { id } = req.params;
-        var todo = await data.findById(id).lean();
-        console.log(todo.completed)
-        await data.updateOne(
-            todo,
-            {
-                $set: {
-                    completed: !todo.completed
-                }
-            }
-        );
+        let object = await data.findById(req.params.id)
+        let objectCompletion = object.completed;
+        let _data = await data.findByIdAndUpdate(req.params.id,
+            { $set: { completed: !objectCompletion } }, { new: true })
         res.status(200).send({
             success: true,
-            data: todo
+            _data
         })
-    }
-    catch (err) {
-        res.status(404).send({
-            success: false,
-            message: err.message
-        })
-    }
+    } catch (err) { res.status(400).send(err) }
 }
 
 async function deleteData(req, res) {
     let { id } = req.params;
 
-    await data.remove({ _id: id })
-        .exec((err, result) => {
-            if (err) return res.status(404).send({
-                success: false,
-                message: 'delete false'
-            })
-            res.status(200).send({
-                success: true,
-                data: result
-            })
-        });
+    try {
+        await data.remove({ _id: id })
+            .exec((err, result) => {
+                if (err) return res.status(404).send({
+                    success: false,
+                    message: 'delete false'
+                })
+                res.status(200).send({
+                    success: true,
+                    data: result
+                })
+            });
+    }
+    catch (err) {
+        console.log(err);
+    }
 }
 
 module.exports = {
