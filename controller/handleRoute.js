@@ -52,7 +52,7 @@ async function postID(req, res) {
             })
         }
 
-        await data.update({ _id: id }, { title: title })
+        await data.updateOne({ _id: id }, { title: title })
             .exec((err, result) => {
                 if (err) throw err;
                 res.status(200).send({
