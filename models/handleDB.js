@@ -20,6 +20,6 @@ const schema = new mongoose.Schema({
     }
 })
 
-const data = mongoose.model('data',schema);
+const data = connection.model('data',schema);
 
 module.exports = data;
